@@ -1,0 +1,293 @@
+<%- include("partials/header"); -%>
+<script defer>
+  localStorage.setItem("userlogin", "<%= check.name %>");
+  localStorage.setItem("role", "<%= check.role %>");
+</script>
+
+
+
+      
+      
+      <div id="myCarousel" class="carousel slide" data-ride="carousel">
+        <!-- Indicators -->
+        <ol class="carousel-indicators">
+          <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+          <li data-target="#myCarousel" data-slide-to="1"></li>
+          <li data-target="#myCarousel" data-slide-to="2"></li>
+        </ol>
+    
+        <!-- Wrapper for slides -->
+        <div class="carousel-inner">
+          <div class="item active">
+            <img src="/css/slide1.jpg" alt="Los Angeles" style="width:100%;">
+          </div>
+    
+          <div class="item">
+            <img src="/css/slide2.jpg" alt="Chicago" style="width:100%;">
+          </div>
+        
+          <div class="item">
+            <img src="/css/slide3.jpg" alt="New york" style="width:100%;">
+          </div>
+        </div>
+    
+        <!-- Left and right controls -->
+        <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+          <span class="glyphicon glyphicon-chevron-left"></span>
+          <span class="sr-only">Previous</span>
+        </a>
+        <a class="right carousel-control" href="#myCarousel" data-slide="next">
+          <span class="glyphicon glyphicon-chevron-right"></span>
+          <span class="sr-only">Next</span>
+        </a>
+      </div>
+    </div>
+    <br><br><br>
+    <div class="p-3 mb-2 bg-light text-dark" id="ebox" style="margin-right: 20px;">
+      <div class="card"  style="width: 250px;">
+        <div class="card-body" id="eventdisplay" style="width: 200px;">
+          <center><h3 class="welcome">Upcoming Events!!!</h3></center>
+        </div>  
+        </div>
+      </div> 
+      <div class="container">  
+    <p>
+      The National Service Scheme (NSS) is a Central Sector Scheme of Government of India, Ministry of Youth Affairs & Sports. It provides opportunity to the student youth of 11th & 12th Class of schools at +2 Board level and student youth of Technical Institution, Graduate & Post Graduate at colleges and University level of India to take part in various government led community service activities & programmes.
+      <br>
+      The sole aim of the NSS is to provide hands on experience to young students in delivering community service. Since inception of the NSS in the year 1969, the number of students strength increased from 40,000 to over 3.8 million up to the end of March 2018 students in various universities, colleges and Institutions of higher learning have volunteered to take part in various community service programmes.
+    </p>
+
+    <hr>
+    <p>The motto of National Service Scheme is <b class="rd">NOT ME BUT YOU</b></p>
+    <br>
+    <br>
+    <p>
+      <b>The main objectives of National Service Scheme (NSS) are:</b>
+      <ul style=" letter-spacing: 2px; font-size: medium; font-family: 'Roboto';">												
+        <li>Understand the community in which they work</li>
+        <li>Understand themselves in relation to their community</li>
+        <li>Identify the needs and problems of the community and involve them in problem-solving</li>
+        <li>Develop among themselves a sense of social and civic responsibility</li>
+        <li>Utilise their knowledge in finding practical solutions to individual and community problems</li>
+        <li>Develop competence required for group-living and sharing of responsibilities</li>
+        <li>Gain skills in mobilising community participation</li>
+        <li>Acquire leadership qualities and democratic attitudes</li>
+        <li>Develop capacity to meet emergencies and natural disasters</li>
+        <li>Practise national integration and social harmony	</li>										
+      </ul>
+    </p>
+    <br><br>
+    <div class="card" style="display: inline-block; width: 35rem; height: 30rem; overflow-y: scroll; margin-right: 50px;">
+      <h5 class="card-title" style=" text-align: center;
+      font-size: 22px;
+      font-weight: 700; color:#202020;
+      text-transform: uppercase;
+      word-spacing: 1px; letter-spacing:2px;">Important Files</h5>
+      <table id="myTable" class="table table-striped table-hover">
+
+      </table>
+    </div>
+    <div class="card" style=" display: inline-block; width: 50rem; height: 30rem; overflow-y: scroll;">
+      <h5 class="card-title" style=" text-align: center;
+      font-size: 22px;
+      font-weight: 700; color:#202020;
+      text-transform: uppercase;
+      word-spacing: 1px; letter-spacing:2px;">Notices</h5>
+      <table id="myTable1" class="table table-striped">
+
+      </table>
+    </div>
+    <script type="module">
+          // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    const firebaseConfig2 = {
+    apiKey: "AIzaSyAorHKDGBH9W1NjBw0pWS8ALk2vqU00J4M",
+    authDomain: "nss-images.firebaseapp.com",
+    projectId: "nss-images",
+    storageBucket: "nss-images.appspot.com",
+    messagingSenderId: "458507359369",
+    appId: "1:458507359369:web:95773b5097d84b61cfe258"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig2);
+    import {getStorage, ref as sRef, uploadBytesResumable, getDownloadURL}from "https://www.gstatic.com/firebasejs/9.19.1/firebase-storage.js"; 
+
+    // // Cloud Firestore Database
+    import{getFirestore, doc, getDoc, setDoc, collection, addDoc, query, where, getDocs}from "https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js";
+    const clouddb = getFirestore();
+
+    let i = 0;
+
+    var q = collection(clouddb, "FileLinks");
+
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        console.log(doc.id, " => ", doc.data());
+        console.log(doc.id, " => ", doc.data().ImageURL);
+        let lpic = doc.data().ImageURL;
+        console.log(lpic);
+        // Find a <table> element with id="myTable":
+          var table = document.getElementById("myTable");
+
+        // Create an empty <tr> element and add it to the 1st position of the table:
+        var row = table.insertRow(0);
+
+        // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+        var cell1 = row.insertCell(0);
+        
+
+        // Add some text to the new cells:
+
+        cell1.innerHTML = doc.data().ImageName;
+        cell1.style = 'padding:8px; color:  #0077b6; text-decoration: underline; cursor: pointer;';
+        cell1.onclick = function () {
+            window.open(doc.data().ImageURL, "_blank");
+        }
+        
+        });
+
+        var q2 = collection(clouddb, "Notice");
+
+        const querySnapshot2 = await getDocs(q2);
+        querySnapshot2.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        console.log(doc.id, " => ", doc.data());
+        
+        // Find a <table> element with id="myTable":
+          var table = document.getElementById("myTable1");
+
+        // Create an empty <tr> element and add it to the 1st position of the table:
+        var row = table.insertRow(0);
+
+        // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+        var cell1 = row.insertCell(0);
+        
+
+        // Add some text to the new cells:
+
+        cell1.innerHTML = doc.data().title+'<br>'+  doc.data().description  +' - ' + doc.data().name ;
+        cell1.style = 'padding:8px; color:  #0077b6;';
+        
+        
+        });
+    </script>
+    <br>
+    <br><br>
+    
+
+    <div class="row">
+      <div class="col-sm-6 col-md-4">
+            <div class="card" style="width: 25rem; height: 30;">
+              <a class="lightbox" href="https://nss.gov.in/sites/default/files/manualNss2006.pdf">
+              <img class="card-img-top" src="/css/manual.jpeg" alt="Card image cap">
+              </a>
+              <div class="card-body">
+                <h5 class="card-title">National Service Scheme Manual</h5>
+                </div>
+            </div>
+      </div>
+      <div class="col-sm-6 col-md-4">
+        <div class="card" style="width: 25rem; height: 30;">
+          <a class="lightbox" href="/gallery">
+          <img class="card-img-top" src="/css/image.jpg" alt="Card image cap">
+          </a>
+          <div class="card-body">
+            <h5 class="card-title">NSS - XIE Gallery</h5>
+            </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-4">
+        <div class="card" style="width: 25rem; height: 30;">
+          <a class="lightbox" href="/about">
+          <img class="card-img-top" src="/css/logo.png" alt="Card image cap">
+          </a>
+          <div class="card-body">
+            <h5 class="card-title">About NSS</h5>
+            </div>
+        </div>
+      </div>
+
+    </div>
+    <br><br>
+    
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+      import { getDatabase, set, ref, update } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js";
+      import { getFirestore, collection, getDocs, getDoc,addDoc, doc, onSnapshot, query, where }from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+  
+  const firebaseConfig = {
+  apiKey: "AIzaSyCXKVJ6WCQLu4YcFFFzIEinpvD3DYJNrnE",
+  authDomain: "nssproject-84888.firebaseapp.com",
+  projectId: "nssproject-84888",
+  storageBucket: "nssproject-84888.appspot.com",
+  messagingSenderId: "624213256954",
+  appId: "1:624213256954:web:e5e6046cfa50e24885b743"
+  };
+  
+  // Initialize Firebase
+  initializeApp(firebaseConfig);
+  //init services
+  const db = getFirestore();
+  const colRef = collection(db,'Eventsofnss')
+  
+  getDocs(colRef)
+  .then((snapshot) => {
+      let events = []
+      snapshot.docs.forEach((doc) => {
+          events.push({ ...doc.data(), id:doc.id})
+      })
+      console.log(events)
+      let j = events.length;
+   
+      var container = document.getElementById("eventdisplay");
+      for (let i = 0; i < events.length; i++)
+      {
+        var ToDate = new Date();
+        if(new Date(events[i].date) >= new Date(ToDate))
+        {
+          var d = []
+        var t = document.createElement("div");
+        d[i] = document.createElement("button");
+        var node = document.createTextNode("Date: " + events[i].date+"\n\n\n\n Time:"+ events[i].start +" to "+events[i].end);
+        t.className ="card-title";
+        d[i].className ="buttonClass";
+        t.id = "title" + i;
+        t.style.fontSize = "20px"
+        t.style.color = "red"
+        t.innerHTML = events[i].title;
+        d[i].innerHTML = "Register"
+        eventdisplay.append(t);
+        
+        eventdisplay.appendChild(node);
+        eventdisplay.append(d[i]);
+        d[i].onclick = function () {
+          console.log(events[i].id);
+          let id = events[i].id;
+          localStorage.setItem("id", id);
+          localStorage.setItem("i", i);
+          window.location= '/post';
+        }
+        }
+      }
+
+  })
+
+  .catch(err =>{
+      console.log(err.mesage)
+  })
+
+  </script>
+  
+
+
+
+
+
+<%- include("partials/footer"); -%>

@@ -1,0 +1,96 @@
+<%- include("partials/header"); -%>
+
+<div class="container">
+    <h1>Add Notice</h1>
+    <form class="add" action="/compose" method="post">
+        <div class="form-group">
+            
+            <label for="">Title</label>
+            <input type="text"  class = "form-control"   name="title" required>
+            
+            <br>
+            <label for="">Description</label>
+            <textarea name="des" class  = "form-control" rows="5" cols="30" required></textarea>
+
+        </div>
+        <button class="btn btn-primary" type="button" name="submit"  data-toggle="modal" data-target="#exampleModalCenter">Publish</button>
+        <input class="btn btn-secondary" type="reset">
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Notice Posted!</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                Notice has been created succesfully
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Discard</button>
+                <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+          </div>
+        </div>
+                
+    </form>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+    import { getDatabase, set, ref, update } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js";
+    import { getFirestore, collection, getDocs, getDoc,addDoc, doc, onSnapshot, query, where, setDoc }from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+  apiKey: "AIzaSyAorHKDGBH9W1NjBw0pWS8ALk2vqU00J4M",
+  authDomain: "nss-images.firebaseapp.com",
+  projectId: "nss-images",
+  storageBucket: "nss-images.appspot.com",
+  messagingSenderId: "458507359369",
+  appId: "1:458507359369:web:95773b5097d84b61cfe258"
+};
+
+// Initialize Firebase
+initializeApp(firebaseConfig);
+//init services
+const db = getFirestore();
+const colRef = collection(db,'Notice')
+
+
+let docid;
+var name = localStorage.getItem("userlogin");
+var role = localStorage.getItem("role");
+const addEventFrom = document.querySelector('.add')
+addEventFrom.addEventListener('submit',(e) => {
+    e.preventDefault()
+    addDoc(colRef,{
+        title: addEventFrom.title.value,
+        description: addEventFrom.des.value,
+        name: name,
+        role: role
+        
+    })
+    
+    .then(function(docRef) {
+    console.log("Document written with ID: ", docRef.id);
+    docid = docRef.id;
+    
+    console.log("Document written with ID: ", docid);
+    addEventFrom.reset()
+
+    })
+    .catch(function(error) {
+        console.error("Error adding document: ", error);
+    });
+    
+})
+
+
+
+   
+
+</script>
+    <%- include("partials/footer"); -%>

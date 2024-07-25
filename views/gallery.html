@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>NSS Gallery</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.8.1/baguetteBox.min.css">
+    <link rel="stylesheet" href="gallery-grid.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+
+</head>
+<body>
+
+<div class="container gallery-container">
+
+    <h1>NSS Event Pictures</h1>
+
+    <p class="page-description text-center">Amazing Events Conducted By NSS - XIE</p>
+    <center>
+        <label>Image Name</label>
+        <input type="text" id="namebox"><label id="extlab"></label> <br><br>
+        <input type="file" id="selbtn"><br><br>
+        
+        <div id="upbtn" class="button_plus"></div>
+        <br><br>
+        <progress id="progressBar" value="0" max="100" style="width:1000px;"></progress>
+        <label id="upprogress" ></label>
+    </center>
+    
+    <div class="tz-gallery">
+        
+            <div class="row justif-content-center">
+                <div class="col-sm-6 col-md-4">
+                    <center>
+                    <a class="lightbox" href="mylink">
+                        <img id="myimg">
+                    </a>
+                    </center>
+                </div>
+            </div>
+        
+        
+        <table id="List">
+            <tbody>
+
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+  
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAorHKDGBH9W1NjBw0pWS8ALk2vqU00J4M",
+      authDomain: "nss-images.firebaseapp.com",
+      projectId: "nss-images",
+      storageBucket: "nss-images.appspot.com",
+      messagingSenderId: "458507359369",
+      appId: "1:458507359369:web:95773b5097d84b61cfe258"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    import {getStorage, ref as sRef, uploadBytesResumable, getDownloadURL}from "https://www.gstatic.com/firebasejs/9.19.1/firebase-storage.js"; 
+  
+    // Cloud Firestore Database
+    import{getFirestore, doc, getDoc, setDoc, collection, addDoc, query, where, getDocs}from "https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js";
+    const clouddb = getFirestore();
+
+    var files = [];
+    var reader = new FileReader();
+
+    var namebox = document.getElementById('namebox');
+    var extlab = document.getElementById('extlab');
+    var myimg = document.getElementById('myimg');
+    var proglab = document.getElementById('upprogress');
+    var SelBtn = document.getElementById('selbtn');
+    var UpBtn = document.getElementById('upbtn');
+    var DownBtn = document.getElementById('downbtn');
+
+   
+    SelBtn.onchange = e =>{
+        files = e.target.files;
+
+        var extention = GetFileExt(files[0]);
+        var name = GetFileName(files[0]);
+
+        namebox.value = name;
+        extlab.innerHTML = extention;
+
+        reader.readAsDataURL(files[0]);
+            
+    }
+    reader.onload = function(){
+        myimg.src = reader.result;
+    }
+
+
+
+    function GetFileExt(file){
+        var temp = file.name.split('.');
+        var ext = temp.slice((temp.length-1),(temp.length));
+        return '.' + ext[0];
+    }
+
+    function GetFileName(file){
+        var temp = file.name.split('.');
+        var fname = temp.slice(0,-1).join('.');
+        return fname;
+    }
+
+    async function UploadProcess(){
+            var ImgToUpload = files[0];
+            var ImgName = namebox.value + extlab.innerHTML;
+            const metaData = {
+                contentType: ImgToUpload.type
+            }
+
+            const storage = getStorage();
+            const storageRef = sRef(storage, "Image/" + ImgName);
+            const UploadTask = uploadBytesResumable(storageRef, ImgToUpload, metaData);
+
+            UploadTask.on('state-changed', (snapshot)=>{
+                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                proglab.innerHTML = "Upload"+ progress + "%";
+                var pbar = document.getElementById("progressBar");
+                pbar.value = progress;
+                
+            },
+            (error)=>{
+                alert("Error: Image not Uploaded!");
+            },
+            ()=>{
+                getDownloadURL(UploadTask.snapshot.ref).then((downloadURL)=>{
+                    SaveURLtoFirestore(downloadURL);
+                })
+            });
+        }
+
+
+
+
+    async function SaveURLtoFirestore(url){
+        var name = namebox.value;
+        var ext = extlab.innerHTML;
+        var ref = doc(clouddb, "ImageLinks/"+name);
+
+        await setDoc(ref,{
+            ImageName: (name+ext),
+            ImageURL: url
+        })
+    }
+
+    
+
+    
+    UpBtn.onclick = UploadProcess;
+
+    var q = collection(clouddb, "ImageLinks");
+    
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        console.log(doc.id, " => ", doc.data());
+        console.log(doc.id, " => ", doc.data().ImageURL);
+        let lpic = doc.data().ImageURL;
+        console.log(lpic);
+        
+            var img = document.createElement('img');
+            
+            img.src = lpic;
+            
+            
+            img.style = 'height: 300px; margin-left: 30px; margin-right: 30px;  margin-bottom: 30px; transition: 0.2s ease-in-out; box-shadow: hover: ? "0 2px 3px rgba(0,0,0,0.2)" : "0 8px 15px rgba(0,0,0,0.3)"; transform: hover: ? "scale(1)" : "scale(1.05)" ;';
+        
+            document.getElementById('List').appendChild(img);
+
+        });
+
+        
+        
+  </script>
+
+</body>
+</html>

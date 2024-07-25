@@ -1,0 +1,183 @@
+<%- include("partials/header"); -%>
+<div class="container">
+    <table class="table table-hover" id="myTable">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">SR no.</th>
+                <th scope="col">Name</th>
+                <th scope="col">Status</th>
+                <th scope="col">Present</th>
+                <th scope="col">Absent</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            
+        </tbody>
+    </table>
+</div>
+
+<script type="module">
+        // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+    apiKey: "AIzaSyCXKVJ6WCQLu4YcFFFzIEinpvD3DYJNrnE",
+    authDomain: "nssproject-84888.firebaseapp.com",
+    projectId: "nssproject-84888",
+    storageBucket: "nssproject-84888.appspot.com",
+    messagingSenderId: "624213256954",
+    appId: "1:624213256954:web:e5e6046cfa50e24885b743"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    import {getStorage, ref as sRef, uploadBytesResumable, getDownloadURL}from "https://www.gstatic.com/firebasejs/9.19.1/firebase-storage.js"; 
+
+    // // Cloud Firestore Database
+    import{getFirestore, doc, getDoc, setDoc, collection, addDoc, query, where, getDocs, updateDoc}from "https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js";
+    const clouddb = getFirestore();
+
+
+    let i = 0;
+    var idattend = localStorage.getItem("attend");
+    var edate = localStorage.getItem("atdate");
+        const docRef = doc(clouddb, "Attendance", idattend);
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+        console.log("Document data:", docSnap.data());
+
+        var myString = docSnap.data();
+        // let [field, value] = myString.split(': ');
+        console.log("Document field:", Object.keys(myString));
+        console.log("Document value:", Object.values(myString));
+         // Find a <table> element with id="myTable":
+                var table = document.getElementById("myTable");
+            
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                    var row = table.insertRow();
+
+                    var cell1 = row.insertCell(0);
+                    var cell2 = row.insertCell(1);
+                    var cell3 = row.insertCell(2);
+                    var cell4 = row.insertCell(3);
+                    var cell5 = row.insertCell(4);
+
+                    // Add some text to the new cells:
+
+                    cell1.innerHTML = i;
+                    cell2.innerHTML = Object.keys(myString)[i];
+                    cell3.innerHTML = Object.values(myString)[i];
+                    var ToDate = new Date();
+
+
+
+                    console.log(new Date(edate).toLocaleDateString());
+                    console.log(ToDate.toLocaleDateString());
+                    if(new Date(edate).toLocaleDateString() == ToDate.toLocaleDateString()) //attendance on same date
+                    {
+                        cell4.innerHTML = "<td><button>Present</button></td>"
+                        cell4.onclick = function () {
+                                console.log(cell4.rowIndex);
+                                updateDoc(doc(clouddb,'Attendance', idattend), {
+                                [Object.keys(myString)[i]]: true
+                                
+                                });
+                                console.log('true');
+                        }
+                        cell5.innerHTML = "<td><button>Absent</button></td>"
+                        cell5.onclick = function () {
+                                updateDoc(doc(clouddb,'Attendance', idattend), {
+                                [Object.keys(myString)[i]]: false
+                                
+                                });
+                                console.log('false');
+                        }
+                    }
+            
+                
+                // cell3.innerHTML = "<td><button class='present' >Present</button> <button class='abscent'>Abscent</button></td>";
+                // let pr = document.getElementsByClassName("present");
+                // let ab = document.getElementsByClassName("abscent");
+                // pr.onclick = 'present()';
+                // ab.onclick = 'abscent()';
+                // function present(){
+                //     updateDoc(doc(clouddb,'Attendance', idattend), {
+                //     [Object.keys(myString)]: true
+                    
+                //     });
+                //     console.log('true');
+                // }
+                // function abscent(){
+                //     updateDoc(doc(clouddb,'Attendance', idattend), {
+                //     [Object.keys(myString)]: false
+                    
+                //     });
+                //     console.log('false');
+                // }
+                // var check = document.getElementsByClassName("messageCheckbox");
+                // console.log(cell3.value);
+                // cell3.onclick = function () {
+                //     if(cell3.innerHTML)
+                //     {
+                //         console.log('true');
+                //     }
+                //     else
+                //     {
+                //         console.log('false');
+                //     }
+                    
+                    
+                    // updateDoc(doc(clouddb,'Attendance', idattend), {
+                    // [Object.keys(myString)]: true
+                    
+                    // });
+                }// Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                
+                     
+        // } 
+        // else {
+        // // docSnap.data() will be undefined in this case
+        // console.log("No such document!");
+        // }
+        
+
+    // let i = 0;
+    // 
+    // var q = collection(clouddb, "Attendance", idattend);
+
+    //     const querySnapshot = await getDocs(q);
+    //     querySnapshot.forEach((doc) => {
+    //     // doc.data() is never undefined for query doc snapshots
+    //     console.log(doc.id, " => ", doc.data());
+        
+    //     // Find a <table> element with id="myTable":
+    //         var table = document.getElementById("myTable");
+
+    //         // Create an empty <tr> element and add it to the 1st position of the table:
+    //         var row = table.insertRow(1);
+
+    //         var cell1 = row.insertCell(0);
+    //         var cell2 = row.insertCell(1);
+    //         var cell3 = row.insertCell(2);
+
+    //         // Add some text to the new cells:
+
+    //         cell1.innerHTML = ++i;
+    //         cell2.innerHTML = doc.data().tag;
+    //         cell3.innerHTML = "<td><button>Download</button></td>"
+    //         cell3.onclick = function () {
+    //             window.open(doc.data().ImageURL, "_blank");
+    //         }// Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+    //         
+        
+    //     });
+
+</script>
+    <%- include("partials/loginfooter"); -%>
+    
+

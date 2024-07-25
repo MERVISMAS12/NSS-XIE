@@ -1,0 +1,106 @@
+<%- include("partials/header"); -%>
+<style>
+  
+    /* Float four columns side by side */
+    .column {
+      width: 30%;
+      padding: 0 20px;
+      margin-left: 18px;
+      margin-right: 18px;
+
+    }
+    
+    /* Remove extra left and right margins, due to padding */
+    .row {margin: 0 -5px;}
+    
+    /* Clear floats after the columns */
+    .row:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+    
+    /* Responsive columns */
+    @media screen and (max-width: 600px) {
+      .column {
+        width: 100%;
+        display: block;
+        margin-bottom: 20px;
+      }
+    }
+    
+    /* Style the counter cards */
+    .card {
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+      padding: 16px;
+      text-align: center;
+      background-color: #caf0f8;
+    }
+            button {
+        font-family: 'Montserrat';
+        font-size: 1.5rem;
+        color: white;
+        text-transform: uppercase;
+        padding: 10px 10px 10px 10px;
+        border-radius: 10px;
+        border: 2px solid #FAFAFA;
+        background: #0077b6;
+        box-shadow: 3px 3px grey;
+        cursor: pointer;
+        margin: 15px 0;
+        width:max;
+        }
+
+        button:active {
+        box-shadow: none;
+        transform: translate(3px, 3px);
+        }
+    </style>
+    <body>
+        <br><br>
+    <div class="row">
+        <div class="column">
+            <div class="card">
+                <center>
+                    <h3>Create Event</h3> <hr>
+                    <p>Create upcoming event</p>
+                    <a href="/compose">
+                        <button>
+                            Create
+                        </button>
+                    </a>
+            </center>
+            </div>
+        </div>
+    
+        <div class="column">
+            <div class="card">
+            <center>
+                <h3>Mark Attedance</h3> <hr>
+                <p>Mark attendance of students</p>
+                <a href="/attend">
+                    <button>
+                        Attendance
+                  </button>
+                </a>
+            </center>
+            </div>
+        </div>
+      
+        <div class="column">
+            <div class="card">
+                <center>
+                    <h3>Create Notice</h3> <hr>
+                    <p>Create notices for events</p>
+                    <a href="/notice">
+                        <button>
+                            Create
+                        </button>
+                    </a>
+                </center>
+            </div>
+        </div>
+    </div>
+     
+    <br>
+    <%- include("partials/loginfooter"); -%>    

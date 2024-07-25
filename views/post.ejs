@@ -1,0 +1,176 @@
+<%- include("partials/header"); -%>
+
+<div class="p-3   mb-2 mr-10  text-dark" style="float: left; width: 800px; margin-left: 50px;">
+  <div class=" card text-center ">
+    <div class="card-header">
+      <h1 class="display-4" id="title">Event Title</h1>
+
+    </div>
+    <div class="card-body bg-light">
+      <h5 class="card-title" id="des">Description</h5>
+      <br>
+      <p class="card-text">Date: <span id="date">date</span> </p>
+      <p class="card-text">Time: <span id="sttime">start</span> to <span id="edtime">end</span> </p>
+      <p class="card-text" > Location: <a id="loc">location</a></p>
+      <a href="#"  id="mylink" class="btn btn-primary">Register</a>
+    </div>
+
+    <!-- <script>
+      function register(){
+        let user = 'mervis';
+        alert("You have registered for the event");
+        
+
+      }
+    </script> -->
+
+    <div class="card-footer text-muted">
+      <span id="days">2</span> days to go
+    </div>
+  </div>
+</div>
+
+
+<div class="p-3  mb-2 mr-10 bg-light text-dark" id="ebox" style="margin-right: 20px;">
+    <div class="card"  style="width: 250px;">
+      <div class="card-body" id="eventdisplay" style="width: 200px;">
+        <center><h3 class="welcome">Upcoming Events!!!</h3></center>
+      </div>  
+    </div>
+</div> 
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+    import { getDatabase, set, ref, update } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js";
+    import { getFirestore, collection, getDocs, getDoc,addDoc, doc, onSnapshot, query, where, updateDoc, setDoc }from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyCXKVJ6WCQLu4YcFFFzIEinpvD3DYJNrnE",
+authDomain: "nssproject-84888.firebaseapp.com",
+projectId: "nssproject-84888",
+storageBucket: "nssproject-84888.appspot.com",
+messagingSenderId: "624213256954",
+appId: "1:624213256954:web:e5e6046cfa50e24885b743"
+};
+
+
+
+// Initialize Firebase
+initializeApp(firebaseConfig);
+//init services
+const db = getFirestore();
+const colRef = collection(db,'Eventsofnss')
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+
+getDocs(colRef)
+.then((snapshot) => {
+    let events = []
+    snapshot.docs.forEach((doc) => {
+        events.push({ ...doc.data(), id:doc.id})
+    })
+    function eventlistcaller(i) {
+              document.getElementById("title").innerHTML = events[i].title;
+              document.getElementById("des").innerHTML = events[i].description;
+              document.getElementById("date").innerHTML = events[i].date;
+              document.getElementById("sttime").innerHTML = events[i].start;
+              document.getElementById("edtime").innerHTML = events[i].end;
+              document.getElementById("loc").innerHTML = events[i].location;
+              var alink = document.getElementById('loc');
+              alink.href = events[i].link;    
+              alink.target = '_blank';
+
+              localStorage.setItem("register", events[i].id);
+
+
+              var ToDate = new Date();
+              function dateDiffInDays(a, b) {
+              const _MS_PER_DAY = 1000 * 60 * 60 * 24;
+              // Discard the time and time-zone information.
+              const utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
+              const utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
+
+              return Math.floor((utc2 - utc1) / _MS_PER_DAY);
+              }
+              const a = new Date(ToDate),
+                    b = new Date(events[i].date),
+            difference = dateDiffInDays(a, b);
+            document.getElementById("days").innerHTML = difference;
+            console.log(difference + ' days')
+      }
+    console.log(events)
+    let j = events.length;
+ 
+    var container = document.getElementById("eventdisplay");
+    for (let i = 0; i < events.length; i++)
+    {
+      var ToDate = new Date();
+      if(new Date(events[i].date) >= new Date(ToDate))
+      {
+      var d = []
+      var t = document.createElement("div");
+      d[i] = document.createElement("button");
+      var node = document.createTextNode("Date: " + events[i].date+"\n\n\n\n Time:"+ events[i].start +" to "+events[i].end);
+      t.className ="card-title";
+      d[i].className ="buttonClass";
+      t.id = "title" + i;
+      t.style.fontSize = "20px"
+      t.style.color = "red"
+      t.innerHTML = events[i].title;
+      d[i].innerHTML = "Register"
+      eventdisplay.append(t);
+      
+      eventdisplay.appendChild(node);
+      eventdisplay.append(d[i]);
+      eventlistcaller(localStorage.getItem("i"));
+      d[i].onclick = function () {
+        console.log(events[i].id);
+        eventlistcaller(i);
+
+        let id = events[i].id;
+        localStorage.setItem("id", id);
+      }
+    }
+
+  }
+
+})
+
+.catch(err =>{
+    console.log(err.mesage)
+})
+
+var myLink = document.getElementById('mylink');
+
+myLink.onclick = function(){
+  var iduser = localStorage.getItem("register");
+  console.log(iduser)
+  //collection ref
+//   const colRef = collection(db,'Attendance')
+//   const docRef = doc(db, 'Attendance', iduser)
+//   updateDoc(docRef, {
+//       mervis: true
+//    })
+//  .then(() =>{
+//    alert("You have Registered Sucessfully");
+//   })
+
+
+// Add a new document in collection "cities"
+    var name = localStorage.getItem("userlogin");
+    updateDoc(doc(db,'Attendance', iduser), {
+      [name]: 'false',
+      
+    });
+
+  
+      
+        
+    
+}
+
+
+</script>
+
+
+<%- include("partials/loginfooter"); -%>

@@ -1,0 +1,185 @@
+<%- include("partials/header"); -%>
+
+
+<div class="container gallery-container">
+
+    <center><h1>NSS Upload File</h1></center>
+
+    <p class="page-description text-center">Please enter the file to be uploaded</p>
+    <center>
+        <label>File Name</label>
+        <input type="text" id="namebox"><label id="extlab"></label> <br><br>
+        <input type="file" id="selbtn"><br><br>
+        <button id="upbtn">Upload File</button>
+        <!-- <div id="upbtn" class="button_plus"></div> -->
+        <br><br>
+        <progress id="progressBar" value="0" max="100" style="width:1000px;"></progress>
+        <label id="upprogress" ></label>
+    </center>
+    
+    <div class="tz-gallery">
+        
+            
+                
+                    <center>
+                    <a class="lightbox" href="mylink">
+                        
+                        <embed src=" " id="myimg" width="800px" height="2100px" />
+                    </a>
+                    
+                    </center>
+                
+            
+        
+        
+        <!-- <table id="List">
+            <tbody>
+
+            </tbody>
+        </table> -->
+
+    </div>
+
+</div>
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+  
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAorHKDGBH9W1NjBw0pWS8ALk2vqU00J4M",
+      authDomain: "nss-images.firebaseapp.com",
+      projectId: "nss-images",
+      storageBucket: "nss-images.appspot.com",
+      messagingSenderId: "458507359369",
+      appId: "1:458507359369:web:95773b5097d84b61cfe258"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    import {getStorage, ref as sRef, uploadBytesResumable, getDownloadURL}from "https://www.gstatic.com/firebasejs/9.19.1/firebase-storage.js"; 
+  
+    // Cloud Firestore Database
+    import{getFirestore, doc, getDoc, setDoc, collection, addDoc, query, where, getDocs}from "https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js";
+    const clouddb = getFirestore();
+
+    var files = [];
+    var reader = new FileReader();
+
+    var namebox = document.getElementById('namebox');
+    var extlab = document.getElementById('extlab');
+    var myimg = document.getElementById('myimg');
+    var proglab = document.getElementById('upprogress');
+    var SelBtn = document.getElementById('selbtn');
+    var UpBtn = document.getElementById('upbtn');
+    var DownBtn = document.getElementById('downbtn');
+
+   
+    SelBtn.onchange = e =>{
+        files = e.target.files;
+
+        var extention = GetFileExt(files[0]);
+        var name = GetFileName(files[0]);
+
+        namebox.value = name;
+        extlab.innerHTML = extention;
+
+        reader.readAsDataURL(files[0]);
+            
+    }
+    reader.onload = function(){
+        myimg.src = reader.result;
+    }
+
+
+
+    function GetFileExt(file){
+        var temp = file.name.split('.');
+        var ext = temp.slice((temp.length-1),(temp.length));
+        return '.' + ext[0];
+    }
+
+    function GetFileName(file){
+        var temp = file.name.split('.');
+        var fname = temp.slice(0,-1).join('.');
+        return fname;
+    }
+
+    async function UploadProcess(){
+            var ImgToUpload = files[0];
+            var ImgName = namebox.value + extlab.innerHTML;
+            const metaData = {
+                contentType: ImgToUpload.type
+            }
+
+            const storage = getStorage();
+            const storageRef = sRef(storage, "files uploaded/" + ImgName);
+            const UploadTask = uploadBytesResumable(storageRef, ImgToUpload, metaData);
+
+            UploadTask.on('state-changed', (snapshot)=>{
+                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                proglab.innerHTML = "Upload"+ progress + "%";
+                var pbar = document.getElementById("progressBar");
+                pbar.value = progress;
+                
+            },
+            (error)=>{
+                alert("Error: File not Uploaded!");
+            },
+            ()=>{
+                getDownloadURL(UploadTask.snapshot.ref).then((downloadURL)=>{
+                    SaveURLtoFirestore(downloadURL);
+                })
+            });
+        }
+
+
+
+
+    async function SaveURLtoFirestore(url){
+        var name = namebox.value;
+        var ext = extlab.innerHTML;
+        var ref = doc(clouddb, "uploadLinks/"+name);
+
+        await setDoc(ref,{
+            ImageName: (name+ext),
+            ImageURL: url,
+            uploader:"<%= check.name %>"
+        })
+    }
+
+    
+
+    
+    UpBtn.onclick = UploadProcess;
+
+    // var q = collection(clouddb, "ImageLinks");
+    
+    //     const querySnapshot = await getDocs(q);
+    //     querySnapshot.forEach((doc) => {
+    //     // doc.data() is never undefined for query doc snapshots
+    //     console.log(doc.id, " => ", doc.data());
+    //     console.log(doc.id, " => ", doc.data().ImageURL);
+    //     let lpic = doc.data().ImageURL;
+    //     console.log(lpic);
+        
+    //         var img = document.createElement('img');
+            
+    //         img.src = lpic;
+            
+            
+    //         img.style = 'height: 300px; margin-left: 30px; margin-right: 30px;  margin-bottom: 30px; transition: 0.2s ease-in-out; box-shadow: hover: ? "0 2px 3px rgba(0,0,0,0.2)" : "0 8px 15px rgba(0,0,0,0.3)"; transform: hover: ? "scale(1)" : "scale(1.05)" ;';
+        
+    //         document.getElementById('List').appendChild(img);
+
+    //     });
+
+        
+        
+  </script>
+
+
+
+<%- include("partials/loginfooter"); -%>
